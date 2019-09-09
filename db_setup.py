@@ -13,7 +13,9 @@ class Books(Base):
     title = Column(String(250), nullable=False)
     author = Column(String(250), nullable=False)
     isbn = Column(String(250), nullable=False)
+    summary = Column(String)
     comments = Column(String)
+
 
 engine = create_engine('sqlite:///bookmanager.db')
 

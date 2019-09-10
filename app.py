@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for
 from sqlalchemy.orm import sessionmaker
+from waitress import serve
 
 from db_setup import Base, Books
 from sqlalchemy import create_engine
@@ -10,6 +11,7 @@ db_session = sessionmaker(bind=engine)()
 
 app = Flask('__main__')
 
+
 @app.route('/')
 def home():
     books = db_session.query(Books).all()
@@ -19,7 +21,6 @@ def home():
 
 @app.route('/add-book', methods=['GET', 'POST'])
 def add_book():
-
     if request.method == 'POST':
         for i in range(1000):
             book = Books(title=f"{request.form['title']} {i}",
@@ -72,4 +73,4 @@ def view_book(book_id):
 
 if __name__ == '__main__':
     app.debug = True
-    app.run()
+    serve(app)

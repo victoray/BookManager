@@ -14,7 +14,16 @@ class Books(Base):
     author = Column(String(250), nullable=False)
     isbn = Column(String(250), nullable=False)
     summary = Column(String)
-    comments = Column(String)
+    comments = Column(Integer)
+
+
+class Comments(Base):
+    __tablename__ = 'comment'
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    comment = Column(String)
+    book_id = Column(Integer, ForeignKey('book.id'))
+    book = relationship(Books)
 
 
 engine = create_engine('sqlite:///bookmanager.db')

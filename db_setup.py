@@ -26,6 +26,7 @@ class Comments(Base):
     book = relationship(Books)
 
 
-engine = create_engine('sqlite:///bookmanager.db')
+# engine = create_engine('sqlite:///bookmanager.db')
+engine = create_engine('postgresql://postgres:postgres@localhost:5432/bookmanager')
 
 Base.metadata.create_all(engine)

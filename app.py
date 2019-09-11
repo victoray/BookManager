@@ -5,7 +5,8 @@ from waitress import serve
 from db_setup import Base, Books, Comments
 from sqlalchemy import create_engine
 
-engine = create_engine('sqlite:///bookmanager.db')
+engine = create_engine('postgresql://postgres:postgres@localhost:5432/bookmanager')
+# engine = create_engine('sqlite:///bookmanager.db')
 Base.metadata.bind = engine
 db_session = sessionmaker(bind=engine)()
 
@@ -14,22 +15,24 @@ app = Flask('__main__')
 
 @app.route('/')
 def home():
-    books = db_session.query(Books).all()
-    comments = db_session.query(Comments).all()
-    db_session.close()
+    books = db_session.query(Books).limit(1000)
 
     for book in books:
-        book.comments = db_session.query(Comments).filter(Comments.book_id == book.id).count()
-        db_session.commit()
-        db_session.close()
+        try:
+            book.comments = db_session.query(Comments).filter(Comments.book_id == book.id).count()
+            db_session.commit()
+        except Exception as e:
+            print(e)
+            db_session.rollback()
 
-    return render_template('index.html', books=books, comments=comments)
+    db_session.close()
+    return render_template('index.html', books=books)
 
 
 @app.route('/add-book', methods=['GET', 'POST'])
 def add_book():
     if request.method == 'POST':
-        for i in range(1000):
+        for i in range(100):
             book = Books(title=f"{request.form['title']} {i}",
                          author=request.form['author'],
                          isbn=request.form['isbn'],
